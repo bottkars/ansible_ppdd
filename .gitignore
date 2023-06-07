@@ -24,4 +24,9 @@ terraforming-aws/.dd_env
 **/terraform.tfstate.d
 terraforming-gcp/default.sc.json
 **/.vscode
-.vscode/
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+!.vscode/*.code-snippets
