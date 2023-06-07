@@ -1,12 +1,13 @@
 # Readme for ansible_ppdd
 
-This Repo provides some example Roles and Playbooks to Configure a PowerProtect DataDomain (PPDD) system
+This Repo provides some example Roles and Playbooks to Configure a Dell PowerProtect DataDomain (PPDD) System
 
-the Roles utilize the PPDD rest API by using the URI Method
+the Roles utilize the PPDD rest API by using the URI Method.   
 
-you can find the Roles in the Roles Directory
-in the main directory, you can find several Playbooks vor example workflows
-the vars/main.yaml essentially represents an interpolation from environemnt variables to ansible vars
+You can find the Roles in the Roles Directory. 
+In the main directory, you can find several Playbooks vor example workflows.  
+T
+The vars/main.yaml essentially represents an interpolation from environment variables to ansible vars.
 
 
 you  calling the playbooks directly with an external vars file.
