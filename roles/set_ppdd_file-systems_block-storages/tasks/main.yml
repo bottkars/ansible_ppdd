@@ -1,0 +1,22 @@
+#/api/v1/dd-systems/{SYSTEM-ID}/file-systems/block-storages
+- name: Set DD Filesystems Block Storage
+  uri:
+    method: PUT
+    url: "{{ ppdd_baseurl }}:{{ ppdd_port }}/{{ ppdd_api_ver }}/dd-systems/{{ system_id }}/file-systems/block-storages"
+    body_format: json
+    body: |
+        {
+          "disks": {{ devices }}
+        }
+    headers:
+      X-DD-AUTH-TOKEN: "{{ access_token }}"    
+    status_code: 200
+    validate_certs: false
+  register: result  
+  when: not ansible_check_mode 
+- set_fact:
+    file_systems_block_storages: "{{ result.json }}"
+- debug:
+    msg:  "{{ file_systems_block_storages }}"
+    verbosity: 1
+

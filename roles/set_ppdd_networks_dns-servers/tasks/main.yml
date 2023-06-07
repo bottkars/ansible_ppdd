@@ -1,0 +1,16 @@
+#/ /api/v3/dd-systems/{SYSTEM-ID}/networks/dns-servers
+- name: Get PPDD Datamovement File Stats
+  uri:
+    method: GET
+    url: "{{ ppdd_baseurl }}:{{ ppdd_port }}/{{ ppdd_api_ver }}/dd-systems/{{ system_id }}/networks/dns-servers"
+    body_format: form-urlencoded
+    body:
+      dnsServerIpAddresses: "{{ dnsServerIpAddresses }}"
+    headers:
+      X-DD-AUTH-TOKEN: "{{ access_token }}"    
+    status_code: 200
+    validate_certs: false
+  register: result  
+  when: not ansible_check_mode 
+- set_fact:
+    networks_dns_servers: "{{ result.json }}"

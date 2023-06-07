@@ -1,0 +1,21 @@
+- name: Define uri with id
+  set_fact: 
+    uri: "{{ ppdd_baseurl }}:{{ ppdd_port }}/{{ ppdd_api_ver }}/dd-systems/{{ system_id }}/users/{{ user }}"
+  when: user  | default('', true) | trim != ''
+- name: Define uri without id
+  set_fact: 
+    uri: "{{ ppdd_baseurl }}:{{ ppdd_port }}/{{ ppdd_api_ver }}/dd-systems/{{ system_id }}/users"
+  when: user  | default('', false) | trim == ''
+- name: Get PPDD Users  
+  uri:
+    method: GET
+    url: "{{ uri }}"
+    body_format: json 
+    headers:
+      X-DD-AUTH-TOKEN: "{{ access_token }}"    
+    status_code: 200
+    validate_certs: false
+  register: result  
+  when: not ansible_check_mode 
+- set_fact:
+    users: "{{ result.json }}"

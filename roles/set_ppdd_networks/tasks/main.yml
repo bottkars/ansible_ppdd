@@ -1,0 +1,44 @@
+#/ /api/v3/dd-systems/{SYSTEM-ID}/networks/dns-servers
+
+- name: Set Operation {{ operation }}
+  set_fact: 
+    body: 
+      operation: "{{ operation }}"
+      domain_name: "{{ domain_name }}"
+  when: operation == "set_domain_name"
+- name: Set Operation {{ operation }}
+  set_fact: 
+    body: 
+      operation: "{{ operation }}"
+      dns_servers: "{{ dns_servers }}"
+  when: operation == "set_domain_name_service"
+- name: Set Operation {{ operation }}
+  set_fact: 
+    body: 
+      operation: "{{ operation }}"
+      host_name: "{{ host_name }}"
+  when: operation == "set_host_name"  
+
+- name: Set Operation {{ operation }}
+  set_fact: 
+    body: 
+      operation: "{{ operation }}"
+      dns_servers: "{{ dns_servers }}"
+  when: operation == "dns_servers"
+- name: Set Network Config
+  uri:
+    url: "{{ ppdd_baseurl }}:{{ ppdd_port }}/{{ ppdd_api_ver }}/dd-systems/{{ system_id }}/networks"
+    method: PUT
+    body_format: json
+    body: "{{ body }}"
+    headers:
+      X-DD-AUTH-TOKEN: "{{ access_token }}"    
+    status_code: "{{ status_code }}"
+    validate_certs: false
+  register: result  
+  when: not ansible_check_mode 
+- set_fact:
+    networks: "{{ result.json if result.json is defined}}"
+- debug:
+    msg:  "{{ networks if networks is defined }}"
+    verbosity: 0

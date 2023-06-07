@@ -1,0 +1,48 @@
+# Example Playbok to configure PPDD
+- name: Create PowerProtect DataDomain Boost user for Avamar Usage
+  hosts: localhost
+  connection: local
+  vars_files: 
+    - ./vars/main.yml
+  tasks:
+  - name: Checking if PPDD FQDN / IP is set
+    fail: 
+      msg: "We do not have ppdd fqdn set !"
+    when: (ppdd_fqdn is not defined) or (ppdd_fqdn|length <= 8)
+  - name: Checking PPDD_PASSWORD is set
+    fail: 
+      msg: "We do not have ppdd_password  set !"
+    when: (ppdd_password is not defined) or (ppdd_password|length == 0)  
+  - name: Setting Base URL
+    set_fact: 
+      ppdd_baseurl: "{{ ppdd_fqdn }}"      
+  - name: Check DataDomain Appliance Ready {{ ppdd_fqdn }}
+    include_role:
+      name: wait_ppdd_api_ready 
+  - debug: 
+      msg: "{{ result }}"
+      verbosity: 1            
+  - name: Get PPDD Token for {{ ppdd_fqdn }}
+    vars:
+      username: "{{ ppdd_username }}"
+      password: "{{ ppdd_password }}"
+    include_role: 
+      name: get_ppdd_token
+  - debug: 
+      msg: "{{ access_token }}"
+      verbosity: 1
+  - name: Create admin User for Avamar
+    include_role: 
+      name: new_ppdd_user
+    vars:
+      user: "{{ ava_dd_boost_user }}"   
+      password: "{{ ppdd_password }}"
+      role: "admin"
+  - name: Set Boost User for ddboostave
+    include_role: 
+      name: set_ppdd_boost_user
+    vars:
+      user: "ddboostave"   
+      operation: "assign"
+            
+      

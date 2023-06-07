@@ -1,0 +1,38 @@
+#/api/v1/dd-systems/{SYSTEM-ID}/file-systems/block-storages
+- name: Set Operation {{ operation }}
+  set_fact: 
+    body: 
+      operation: "{{ operation }}"
+      servers: 
+        server: "{{ servers }}"
+  when: operation == "add_servers" or operation == "delete_servers"
+- name: Set Operation {{ operation }}
+  set_fact: 
+    body: 
+      operation: "{{ operation }}"
+  when: operation == "enable" or operation == "disable"  
+- name: Set DD NTP {{ operation }}
+  vars:
+    operations:
+      - enable
+      - disable
+      - add_servers
+      - delete_servers
+  uri:
+    method: PUT
+    url: "{{ ppdd_baseurl }}:{{ ppdd_port }}/{{ ppdd_api_ver }}/dd-systems/{{ system_id }}/services/ntp"
+    body_format: json
+    body: "{{ body }}"
+    headers:
+      X-DD-AUTH-TOKEN: "{{ access_token }}"    
+    status_code: 200,500, -1
+    validate_certs: false
+  register: result  
+  when: not ansible_check_mode and operation in operations
+- set_fact:
+    ntpservice: "{{ result.json if result.json is defined}}"
+- debug:
+    msg:  "{{ ntpservice if ntpservice is defined }}"
+    verbosity: 0
+
+

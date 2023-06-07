@@ -1,0 +1,16 @@
+#/ /api/v3/dd-systems/{SYSTEM-ID}/networks/dns-servers
+- name: Set Default Network Gateway
+  uri:
+    url: "{{ ppdd_baseurl }}:{{ ppdd_port }}/{{ ppdd_api_ver }}/dd-systems/{{ system_id }}/networks/gateways/static/ipv4"
+    method: PUT
+    body_format: json
+    body:
+      ipAddress: "{{ gateway }}"
+    headers:
+      X-DD-AUTH-TOKEN: "{{ access_token }}"    
+    status_code: "{{ status_code }}"
+    validate_certs: false
+  register: result  
+  when: not ansible_check_mode 
+- set_fact:
+    networks: "{{ result.json }}"

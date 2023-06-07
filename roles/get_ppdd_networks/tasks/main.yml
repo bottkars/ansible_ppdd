@@ -1,0 +1,23 @@
+#/ /api/v3/dd-systems/{SYSTEM-ID}/networks/dns-servers
+- name: Define uri with id
+  set_fact: 
+    uri: "{{ ppdd_baseurl }}:{{ ppdd_port }}/{{ ppdd_api_ver }}/dd-systems/{{ system_id }}/networks/{{ network_id }}"
+  when: network_id  | default('', true) | trim != ''
+- name: Define uri without id
+  set_fact: 
+    uri: "{{ ppdd_baseurl }}:{{ ppdd_port }}/{{ ppdd_api_ver }}/dd-systems/{{ system_id }}/networks"
+  when: network_id  | default('', false) | trim == ''
+- name: Get PPDD Datamovement File Stats
+  uri:
+    method: GET
+    url: "{{ uri }}"
+    body_format: form-urlencoded
+    body:
+    headers:
+      X-DD-AUTH-TOKEN: "{{ access_token }}"    
+    status_code: 200
+    validate_certs: false
+  register: result  
+  when: not ansible_check_mode 
+- set_fact:
+    networks: "{{ result.json }}"

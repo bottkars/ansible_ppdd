@@ -1,0 +1,19 @@
+- name: "Set PPDD User Password for {{ user }}"
+  uri:
+    method: PUT
+    url: "{{ ppdd_baseurl }}:{{ ppdd_port }}/{{ ppdd_api_ver }}/dd-systems/{{ system_id }}/users/{{ user }}"
+    body_format: json 
+    headers:
+      X-DD-AUTH-TOKEN: "{{ access_token }}"    
+    status_code: "{{ status_code }}"
+    validate_certs: false
+    body: |
+      {
+        "current_password": "{{ current_password }}",
+        "new_password": "{{ new_password }}"
+      }    
+  register: result  
+  when: not ansible_check_mode 
+- debug: 
+    msg: "{{ result }}"
+    verbosity: 1   

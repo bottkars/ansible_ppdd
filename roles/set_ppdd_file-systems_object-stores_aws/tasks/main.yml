@@ -1,0 +1,22 @@
+#/api/v1/dd-systems/{SYSTEM-ID}/file-systems/object-stores/aws
+- name: Set DD Filesystems Object Stores
+  uri:
+    method: PUT
+    url: "{{ ppdd_baseurl }}:{{ ppdd_port }}/{{ ppdd_api_ver }}/dd-systems/{{ system_id }}/file-systems/object-stores/aws"
+    body_format: json
+    body:
+      object_store_detail:
+        disks: "{{ devices }}"
+        acceptCertificate: true
+        bucketType: "{{ bucket }}"
+    headers:
+      X-DD-AUTH-TOKEN: "{{ access_token }}"    
+    status_code: 200
+    validate_certs: false
+  register: result  
+  when: not ansible_check_mode 
+- set_fact:
+    file_systems_object_stores: "{{ result.json }}"
+- debug:
+    msg:  "{{ file_systems_object_stores }}"
+    verbosity: 0

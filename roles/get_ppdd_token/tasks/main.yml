@@ -1,0 +1,19 @@
+- name: Get PPDD Token
+  uri:
+    method: POST
+    url: "{{ ppdd_baseurl }}:{{ ppdd_port }}/{{ ppdd_api_ver }}/auth"
+    body:
+      username: "{{ username }}"
+      password: "{{ password }}"
+    body_format: json
+    status_code: "{{ status_code }}"
+    validate_certs: false
+  register: result  
+  when: not ansible_check_mode 
+- set_fact:
+    access_token: "{{ result.x_dd_auth_token }}"
+  when: result.x_dd_auth_token is defined 
+- set_fact:
+    access_token: "none"
+  when: result.x_dd_auth_token is undefined 
+

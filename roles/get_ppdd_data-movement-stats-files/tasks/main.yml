@@ -1,0 +1,15 @@
+#/rest/v1.0/dd-systems/{SYSTEM-ID}/data-movement/stats/files
+- name: Get PPDD Datamovement File Stats
+  uri:
+    method: GET
+    url: "{{ ppdd_baseurl }}:{{ ppdd_port }}/{{ ppdd_api_ver }}/dd-systems/{{ system_id }}/data-movement/stats/files"
+    body_format: form-urlencoded
+    body:
+    headers:
+      X-DD-AUTH-TOKEN: "{{ access_token }}"    
+    status_code: 200
+    validate_certs: false
+  register: result  
+  when: not ansible_check_mode 
+- set_fact:
+    data_movement_stats_files: "{{ result.json }}"

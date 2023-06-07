@@ -1,0 +1,23 @@
+#/api/v2/dd-systems/{SYSTEM-ID}/protocols/nfs
+- name: new PPDD NFS export {{ export_name }}
+  uri:
+    method: POST
+    url: "{{ ppdd_baseurl }}:{{ ppdd_port }}/{{ ppdd_api_ver }}/dd-systems/{{ system_id }}/protocols/nfs/exports"
+    body_format: json
+    body: |
+     {
+       "export_name": "{{export_name }}",
+       "export_path": "{{export_path }}",
+       "clients": {{ clients }}
+     }
+    headers:
+      X-DD-AUTH-TOKEN: "{{ access_token }}"    
+    status_code: 201,400
+    validate_certs: false
+  register: result  
+  when: not ansible_check_mode 
+- set_fact:
+    nfs_export: "{{ result.json }}"
+- debug:
+    msg:  "{{ nfs_export if nfs_export is defined }}"
+    verbosity: 0    

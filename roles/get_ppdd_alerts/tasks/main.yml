@@ -1,0 +1,17 @@
+# /api/v1/dd-systems/{SYSTEM-ID}/storage/disks
+- name: Get PPDS Sytem Configuration
+  uri:
+    method: GET
+    url: "{{ ppdd_baseurl }}:{{ ppdd_port }}/{{ ppdd_api_ver }}/dd-systems/{{ system_id }}/alerts"
+    body_format: json 
+    headers:
+      X-DD-AUTH-TOKEN: "{{ access_token }}"    
+    status_code: 200
+    validate_certs: false
+    body_format: form-urlencoded
+    body:
+      page: 1
+  register: result  
+  when: not ansible_check_mode 
+- set_fact:
+    alerts: "{{ result.json }}"

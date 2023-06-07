@@ -1,0 +1,4 @@
+ppdd_api_ver: rest/v1.0
+ppdd_port: 3009
+system_id: "0"
+status_code: 200,500

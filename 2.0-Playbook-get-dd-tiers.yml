@@ -1,0 +1,43 @@
+# Example Playbok to configure PPDD
+- name: Playbook to configure DataDomain for PPDM
+  hosts: localhost
+  connection: local
+  vars_files: 
+    - ./vars/main.yml
+  tasks:
+  - name: Checking if PPDD FQDN / IP is set
+    fail: 
+      msg: "We do not have ppdd fqdn set !"
+    when: (ppdd_fqdn is not defined) or (ppdd_fqdn|length <= 8)
+  - name: Checking PPDD_PASSWORD is set
+    fail: 
+      msg: "We do not have ppdd_password  set !"
+    when: (ppdd_password is not defined) or (ppdd_password|length == 0)     
+  - name: Setting Base URL
+    set_fact: 
+      ppdd_baseurl: "{{ ppdd_fqdn }}"  
+  - name: Check DataDomain Appliance Ready {{ ppdd_fqdn }}
+    include_role:
+      name: wait_ppdd_api_ready 
+  - debug: 
+      msg: "{{ result }}"
+      verbosity: 1            
+  - name: Get PPDD Token for {{ ppdd_fqdn }}
+    vars:
+      username: "{{ ppdd_username }}"
+      password: "{{ ppdd_password }}"
+    include_role: 
+      name: get_ppdd_token
+  - debug: 
+      msg: "{{ access_token }}"
+      verbosity: 1
+  - name: Get Storage tiers {{ ppdd_fqdn }}
+    include_role: 
+      name: get_ppdd_storage_status
+    #vars:
+    #  filter: "status=UNKNOWN and tierType=OTHER and capacity=(536870912000,1073741824000)"
+  - debug:
+#      msg: "{{ tiers | json_query('diskInfo[].device') }}"
+      msg: "{{ tiers }}"
+      verbosity: 0 
+      

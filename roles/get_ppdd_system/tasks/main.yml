@@ -1,0 +1,13 @@
+- name: Get PPDD Sytem Configuration
+  uri:
+    method: GET
+    url: "{{ ppdd_baseurl }}:{{ ppdd_port }}/{{ ppdd_api_ver }}/system"
+    body_format: json 
+    headers:
+      X-DD-AUTH-TOKEN: "{{ access_token }}"    
+    status_code: 200
+    validate_certs: false
+  register: result  
+  when: not ansible_check_mode 
+- set_fact:
+    configuration: "{{ result.json }}"

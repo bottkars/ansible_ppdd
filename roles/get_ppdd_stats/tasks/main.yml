@@ -1,0 +1,15 @@
+#/api/v2/dd-systems/{SYSTEM-ID}/stats
+- name: Get PPDD NFS Protocol
+  uri:
+    method: GET
+    url: "{{ ppdd_baseurl }}:{{ ppdd_port }}/{{ ppdd_api_ver }}/dd-systems/{{ system_id }}/stats"
+    body_format: form-urlencoded
+    body:
+    headers:
+      X-DD-AUTH-TOKEN: "{{ access_token }}"    
+    status_code: 200
+    validate_certs: false
+  register: result  
+  when: not ansible_check_mode 
+- set_fact:
+    stats: "{{ result.json.stats }}"

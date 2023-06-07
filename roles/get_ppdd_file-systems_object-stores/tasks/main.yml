@@ -1,0 +1,17 @@
+#/api/v1/dd-systems/{SYSTEM-ID}/file-systems/object-stores/aws
+- name: Get DD Filesystems Object Storage
+  uri:
+    method: GET
+    url: "{{ ppdd_baseurl }}:{{ ppdd_port }}/{{ ppdd_api_ver }}/dd-systems/{{ system_id }}/file-systems/object-stores"
+    body_format: json
+    headers:
+      X-DD-AUTH-TOKEN: "{{ access_token }}"    
+    status_code: 200
+    validate_certs: false
+  register: result  
+  when: not ansible_check_mode 
+- set_fact:
+    file_systems_object_stores: "{{ result.json }}"
+- debug:
+    msg:  "{{ file_systems_object_stores }}"
+    verbosity: 0

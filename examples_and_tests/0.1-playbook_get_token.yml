@@ -1,0 +1,32 @@
+# Example Playbok to configure PPDD
+- name: Simple playbook to get DataDomain Token
+  hosts: localhost
+  connection: local
+  vars_files: 
+    - ./vars/main.yml
+  tasks:
+  - name: Checking Required Variables
+    fail: 
+      msg: "We do not have ppdd fqdn set !"
+    when: (ppdd_fqdn is not defined) or (ppdd_fqdn|length <= 8)
+  - name: Checking Required Variables
+    fail: 
+      msg: "We do not have ppdd_password  set !"
+    when: (ppdd_password is not defined) or (ppdd_password|length == 0)      
+  - name: Setting Base URL
+    set_fact: 
+      ppdd_baseurl: "{{ ppdd_fqdn }}"  
+  - name: Check DataDomain Appliance Ready {{ ppdd_fqdn }}
+    include_role:
+      name: wait_ppdd_api_ready 
+  - debug: 
+      msg: "{{ result }}"
+      verbosity: 1            
+  - name: Get PPDD Token for {{ ppdd_fqdn }}
+    include_role: 
+      name: get_ppdd_token
+#    vars: 
+#      ppdd_password: "{{ ppdd_password }}"
+  - debug: 
+      msg: "{{ access_token }}"
+      verbosity: 1

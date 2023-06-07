@@ -1,0 +1,19 @@
+- name: "Set PPDD Boost User {{ user }}"
+  uri:
+    method: PUT
+    url: "{{ ppdd_baseurl }}:{{ ppdd_port }}/{{ ppdd_api_ver }}/dd-systems/{{ system_id }}/protocols/ddboost/users"
+    body_format: json 
+    headers:
+      X-DD-AUTH-TOKEN: "{{ access_token }}"    
+    status_code: "{{ status_code }}"
+    validate_certs: false
+    body: 
+      operation: "{{ operation }}" 
+      user: "{{ user }}"
+  register: result  
+  when: not ansible_check_mode 
+- set_fact:
+    boostuser: "{{ result.json if result.json is defined}}"
+- debug:
+    msg:  "{{ boostuser if boostuser is defined }}"
+    verbosity: 0

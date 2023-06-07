@@ -1,0 +1,5 @@
+ppdd_api_ver: rest/v3
+ppdd_port: 3009
+system_id: "0"
+interface: "ethV0"
+status_code: 200

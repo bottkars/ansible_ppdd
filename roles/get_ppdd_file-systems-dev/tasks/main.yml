@@ -1,0 +1,18 @@
+#/rest/v1.0/dd-systems/{SYSTEM-ID}/stats/file-systems
+- name: Get PPDD file-systems
+  uri:
+    method: GET
+    url: "{{ ppdd_baseurl }}:{{ ppdd_port }}/{{ ppdd_api_ver }}/dd-systems/{{ system_id }}/stats/file-systems"
+    body_format: form-urlencoded 
+    body:
+      query:
+        - [ tier, "{{ tier }}" ]
+        - [ need_delta, "{{ need_delta }}" ]      
+    headers:
+      X-DD-AUTH-TOKEN: "{{ access_token }}"
+    status_code: 200
+    validate_certs: false
+  register: result  
+  when: not ansible_check_mode 
+- set_fact:
+    file_systems: "{{ result.json }}"

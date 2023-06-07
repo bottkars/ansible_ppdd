@@ -1,0 +1,25 @@
+#/api/v1/dd-systems/{SYSTEM-ID}/licenses
+- name: Set DD Elms unserved License 
+  vars:
+    operations:
+      - 'elms_update_with_content'
+      - 'elms_update_with_filename'
+  uri:
+    method: PUT
+    url: "{{ ppdd_baseurl }}:{{ ppdd_port }}/{{ ppdd_api_ver }}/dd-systems/{{ system_id }}/licenses"
+    body_format: json
+    body: 
+      operation: "{{ operation }}"
+      elms_unserved_license: 
+        license_content: "{{ license_content }}"
+    headers:
+      X-DD-AUTH-TOKEN: "{{ access_token }}"  
+    status_code: 200,500, -1
+    validate_certs: false
+  register: result  
+  when: not ansible_check_mode and operation in operations
+- set_fact:
+    license: "{{ result.json if result.json is defined}}"
+
+
+

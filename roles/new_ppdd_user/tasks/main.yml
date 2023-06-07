@@ -1,0 +1,24 @@
+#/api/v1/dd-systems/{SYSTEM-ID}/file-systems/block-storages
+- name: New DD User {{ user }}
+  uri:
+    method: POST
+    url: "{{ ppdd_baseurl }}:{{ ppdd_port }}/{{ ppdd_api_ver }}/dd-systems/{{ system_id }}/users"
+    body_format: json
+    body: 
+      role  : "{{ role }}"
+      name   : "{{ user }}"
+      password : "{{ password }}" 
+      force_password_change : "false"
+    headers:
+      X-DD-AUTH-TOKEN: "{{ access_token }}"    
+    status_code: 201,400,409, -1
+    validate_certs: false
+  register: result  
+  when: not ansible_check_mode
+- set_fact:
+    username: "{{ result.json if result.json is defined}}"
+- debug:
+    msg:  "{{ username if username is defined }}"
+    verbosity: 0
+
+

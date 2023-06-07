@@ -1,0 +1,14 @@
+- name: Wait PPDD API Ready Ready State
+  uri:
+    method: GET
+    url: "{{ ppdd_baseurl }}:{{ ppdd_port }}/{{ ppdd_api_ver }}/auth"
+    body_format: json 
+    status_code: 405,200,-1 
+    validate_certs: false
+  register: result  
+  when: not ansible_check_mode 
+  retries: "100"
+  delay: "30"
+  until: result.status is defined and ( result.status == 200 or result.status == 405 )
+- set_fact:
+    state: "{{ result.json }}"

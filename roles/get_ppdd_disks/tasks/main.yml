@@ -1,0 +1,35 @@
+# /api/v1/dd-systems/{SYSTEM-ID}/storage/disks
+- name: Define uri with id
+  set_fact: 
+    uri: "{{ ppdd_baseurl }}:{{ ppdd_port }}/{{ ppdd_api_ver }}/dd-systems/{{ system_id }}/storage/disks/{{ id }}"
+  when: id  | default('', true) | trim != ''
+- name: Define uri without id
+  set_fact: 
+    uri: "{{ ppdd_baseurl }}:{{ ppdd_port }}/{{ ppdd_api_ver }}/dd-systems/{{ system_id }}/storage/disks"
+  when: id  | default('', false) | trim == ''
+- name: Define uri with filter
+  set_fact: 
+    uri: "{{ uri }}?filter={{ filter |urlencode}}&include_fields={{ include_fields |urlencode}}}"
+  when: filter | default('', true) | trim != ''  
+# - name: Define uri without filter
+#  set_fact: 
+#    uri: "{{ uri }}?&include_fields={{ include_fields|urlencode} }}"
+#  when: filter | default('', false) | trim == '' 
+
+
+- name: Get PPDD Disks
+  uri:
+    method: GET
+    url: "{{ uri }}"
+    body_format: json 
+    headers:
+      X-DD-AUTH-TOKEN: "{{ access_token }}"    
+    status_code: 200
+    validate_certs: false
+  register: result  
+  when: not ansible_check_mode 
+- set_fact:
+    disks: "{{ result.json }}"
+
+
+

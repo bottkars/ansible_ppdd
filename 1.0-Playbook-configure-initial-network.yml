@@ -1,0 +1,65 @@
+# Example Playbok to configure PPDD
+- name: Playbook to configure DataDomain for PPDM
+  hosts: localhost
+  connection: local
+  vars_files: 
+    - ./vars/main.yml
+  tasks:
+  - name: Checking if PPDD FQDN / IP is set
+    fail: 
+      msg: "We do not have ppdd fqdn set !"
+    when: (ppdd_fqdn is not defined) or (ppdd_fqdn|length <= 8)
+  - name: Checking ppdd_username is set
+    fail: 
+      msg: "We do not have ppdd_username set! Check vars/main.yml for assignment from env vars"
+    when: (ppdd_username is not defined) or (ppdd_username|length == 0)      
+  - name: Checking PPDD_PASSWORD is set
+    fail: 
+      msg: "We do not have ppdd_password  set ! Check vars/main.yml for assignment from env vars"
+    when: (ppdd_password is not defined) or (ppdd_password|length == 0)  
+  - name: Checking PPDD_ADDRESS
+    fail: 
+      msg: "We do not have ppdd_address set ! Check vars/main.yml for assignment from env vars"
+    when: (ppdd_address is not defined) or (ppdd_address|length == 0)                           
+  - name: Checking PPDD_NETMASK
+    fail: 
+      msg: "We do not have ppdd_netmask set ! Check vars/main.yml for assignment from env vars"
+    when: (ppdd_netmask is not defined) or (ppdd_netmask|length == 0)                           
+  - name: Checking PPDD_GATEWAY
+    fail: 
+      msg: "We do not have ppdd_gateway set ! Check vars/main.yml for assignment from env vars"
+    when: (ppdd_gateway is not defined) or (ppdd_gateway|length == 0)                           
+  - name: Setting Base URL
+    set_fact: 
+      ppdd_baseurl: "{{ ppdd_fqdn }}"  
+  - name: Check DataDomain Appliance Ready {{ ppdd_fqdn }}
+    include_role:
+      name: wait_ppdd_api_ready 
+  - debug: 
+      msg: "{{ result }}"
+      verbosity: 1            
+  - name: Get PPDD Token for {{ ppdd_fqdn }}
+    vars:
+      status_code: 201,500 #,401
+      username: "{{ ppdd_username }}"
+      password: "{{ ppdd_initial_password }}"
+    include_role: 
+      name: get_ppdd_token
+  - debug: 
+      msg: "{{ access_token }}"
+      verbosity: 1
+  - name: Set PPDD Initial Gateway
+    vars:
+      gateway: "{{ ppdd_gateway }}"
+      status_code: 200,-1 # we accept failure here for subsequent run
+    include_role: 
+      name: set_ppdd_networks_gateways      
+  - name: Set PPDD Initial IP Address {{ ppdd_fqdn }}
+    vars:
+      interface: "ethV0"
+      dhcp: "NO"
+      address: "{{ ppdd_address }}"
+      netmask: "{{ ppdd_netmask }}"
+      status_code: 200,500,400,-1 # we accept failure here for subsequent run
+    include_role: 
+      name: set_ppdd_networks_interfaces

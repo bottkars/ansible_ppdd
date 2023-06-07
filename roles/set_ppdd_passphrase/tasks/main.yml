@@ -1,0 +1,27 @@
+- name: Set Operation {{ operation }}
+  set_fact: 
+    body: 
+      operation: "{{ operation }}"
+      pphrase_request:  
+        new_pphrase: "{{ passphrase }}"
+  when: operation == "set_pphrase"
+- name: Set DD PassPhrase {{ operation }}
+  vars:
+    operations:
+      - set_pphrase
+  uri:
+    method: PUT
+    url: "{{ ppdd_baseurl }}:{{ ppdd_port }}/{{ ppdd_api_ver }}/dd-systems/{{ system_id }}/systems"
+    body_format: json
+    body: "{{ body }}"
+    headers:
+      X-DD-AUTH-TOKEN: "{{ access_token }}"    
+    status_code: 200,500, -1
+    validate_certs: false
+  register: result  
+  when: not ansible_check_mode and operation in operations
+- set_fact:
+    pphrase: "{{ result.json if result.json is defined}}"
+- debug:
+    msg:  "{{ pphrase if pphrase is defined }}"
+    verbosity: 0

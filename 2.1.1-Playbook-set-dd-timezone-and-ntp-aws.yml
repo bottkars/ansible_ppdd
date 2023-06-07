@@ -1,0 +1,57 @@
+# Example Playbok to configure PPDD
+- name: Set PowerProtect DataDomain Appliance Timezone and NTP for AWS
+  hosts: localhost
+  connection: local
+  vars_files: 
+    - ./vars/main.yml
+  tasks:
+  - name: Checking if PPDD FQDN / IP is set
+    fail: 
+      msg: "We do not have ppdd fqdn set !"
+    when: (ppdd_fqdn is not defined) or (ppdd_fqdn|length <= 8)
+  - name: Checking PPDD_PASSWORD is set
+    fail: 
+      msg: "We do not have ppdd_password  set !"
+    when: (ppdd_password is not defined) or (ppdd_password|length == 0) 
+  - name: Checking ppdd_timezone is set
+    fail: 
+      msg: "We do not have ppdd_timezone set !"
+    when: (ppdd_timezone is not defined) or (ppdd_timezone|length == 0) 
+  - name: Setting Base URL
+    set_fact: 
+      ppdd_baseurl: "{{ ppdd_fqdn }}"      
+  - name: Check DataDomain Appliance Ready {{ ppdd_fqdn }}
+    include_role:
+      name: wait_ppdd_api_ready 
+  - debug: 
+      msg: "{{ result }}"
+      verbosity: 1            
+  - name: Get PPDD Token for {{ ppdd_fqdn }}
+    vars:
+      username: "{{ ppdd_username }}"
+      password: "{{ ppdd_password }}"
+    include_role: 
+      name: get_ppdd_token
+  - debug: 
+      msg: "{{ access_token }}"
+      verbosity: 1
+  - name: enable DD NTP Service 
+    include_role: 
+      name: set_ppdd_ntpService
+    vars:
+      operation: "enable"   
+  - name: add DD NTP servers
+    include_role: 
+      name: set_ppdd_ntpService
+    vars:
+      operation: "add_servers"   
+      servers: 
+       - 169.254.169.123 
+  - name: Set Timezone
+    include_role: 
+      name: set_ppdd_settings
+    vars:
+      operation: "set_timezone"   
+      timezone: "{{ ppdd_timezone }}"
+ 
+            
