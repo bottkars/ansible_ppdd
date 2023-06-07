@@ -30,3 +30,4 @@ terraforming-gcp/default.sc.json
 !.vscode/launch.json
 !.vscode/extensions.json
 !.vscode/*.code-snippets
+.gitignore
