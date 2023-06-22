@@ -17,3 +17,5 @@ ppdd_passphrase: "{{ lookup('env','PPDD_PASSPHRASE') }}"
 atos_bucket: "{{ lookup('env','ATOS_BUCKET') }}"
 ppdd_timezone: "{{ lookup('env','PPDD_TIMEZONE') }}"
 ava_dd_boost_user: ddboostave
+atos_container: "{{ lookup('env','DDVE_ATOS_CONTAINER') }}"
+atos_storageaccount: "{{ lookup('env','DDVE_ATOS_STORAGEACCOUNT') }}"

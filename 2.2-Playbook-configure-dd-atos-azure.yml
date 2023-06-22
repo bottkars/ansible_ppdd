@@ -1,5 +1,5 @@
 # Example Playbok to configure PPDD
-- name: Set PowerProtect DataDomain Appliance Timezone and NTP for GCP
+- name: Check PowerProtect DataDomain ATOS ( Active Tier on Object) for Azure
   hosts: localhost
   connection: local
   vars_files: 
@@ -12,14 +12,18 @@
   - name: Checking PPDD_PASSWORD is set
     fail: 
       msg: "We do not have ppdd_password  set !"
-    when: (ppdd_password is not defined) or (ppdd_password|length == 0) 
-  - name: Checking ppdd_timezone is set
+    when: (ppdd_password is not defined) or (ppdd_password|length == 0)
+  - name: Checking if atos_container is set
     fail: 
-      msg: "We do not have ppdd_timezone set !"
-    when: (ppdd_timezone is not defined) or (ppdd_timezone|length == 0) 
+      msg: "We do not have atos_container set !"
+    when: (atos_bucket is not defined) or (atos_container|length <= 5)    
+  - name: Checking if atos_storageaccount is set
+    fail: 
+      msg: "We do not have atos_storageaccount set !"
+    when: (atos_bucket is not defined) or (atos_storageaccount|length <= 8)        
   - name: Setting Base URL
     set_fact: 
-      ppdd_baseurl: "{{ ppdd_fqdn }}"      
+      ppdd_baseurl: "{{ ppdd_fqdn }}"  
   - name: Check DataDomain Appliance Ready {{ ppdd_fqdn }}
     include_role:
       name: wait_ppdd_api_ready 
@@ -35,23 +39,14 @@
   - debug: 
       msg: "{{ access_token }}"
       verbosity: 1
-  - name: enable DD NTP Service 
+
+
+  - name: Get Active Tier on Object Status
     include_role: 
-      name: set_ppdd_ntpService
+      name: get_ppdd_file-systems_object-stores  
+
+  - name: Enable DDBoost
+    include_role: 
+      name: set_ppdd_boostService
     vars:
       operation: "enable" 
-  - name: add DD NTP servers
-    include_role: 
-      name: set_ppdd_ntpService
-    vars:
-      operation: "add_servers"   
-      servers: 
-       - time.windows.com         
-  - name: Set Timezone
-    include_role: 
-      name: set_ppdd_settings
-    vars:
-      operation: "set_timezone"   
-      timezone: "{{ ppdd_timezone }}"
- 
-            
