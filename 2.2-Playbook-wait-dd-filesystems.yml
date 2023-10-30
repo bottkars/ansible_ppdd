@@ -36,7 +36,6 @@
       name: get_ppdd_file-systems
     vars:
       filter: "tierType=ACTIVE"
-    when: not ansible_check_mode 
     retries: "100"
     delay: "30"
     until: file_systems.fs_status == sn_enabled 
