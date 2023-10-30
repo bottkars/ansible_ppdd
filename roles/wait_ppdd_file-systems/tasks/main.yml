@@ -1,0 +1,26 @@
+#/rest/v1.0/dd-systems/{SYSTEM-ID}/stats/file-systems
+#/rest/v1.0/dd-systems/{SYSTEM-ID}/file-systems
+- name: Define uri without id
+  set_fact: 
+    uri: "{{ ppdd_baseurl }}:{{ ppdd_port }}/{{ ppdd_api_ver }}/dd-systems/{{ system_id }}/file-systems"
+  when: id  | default('', false) | trim == ''
+- name: Define uri with filter
+  set_fact: 
+    uri: "{{ uri }}?filter={{ filter }}" # |urlencode}}" #&include_fields={{ include_fields |urlencode}}}"
+  when: filter | default('', true) | trim != ''  
+- name: Get PPDD file-systems
+  uri:
+    method: GET
+    url: "{{ uri }}"
+    body_format: json 
+    headers:
+      X-DD-AUTH-TOKEN: "{{ access_token }}"    
+    status_code: 200
+    validate_certs: false
+  register: result  
+  when: not ansible_check_mode 
+  retries: 100
+  delay: 30
+  until: result.fs_status is defined and result.fs_status == sn_enabled 
+- set_fact:
+    file_systems: "{{ result.json }}"

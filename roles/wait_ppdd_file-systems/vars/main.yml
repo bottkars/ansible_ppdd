@@ -1,0 +1,8 @@
+ppdd_api_ver: rest/v1.0
+ppdd_port: 3009
+system_id: "0"
+exclude_fields: "link"
+include_fields: ""
+
+
+# "pattern": "^([^,]+,*)+$"
