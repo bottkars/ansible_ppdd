@@ -21,6 +21,6 @@
   when: not ansible_check_mode 
   retries: 100
   delay: 30
-  until: result.fs_status is defined and result.fs_status == sn_enabled 
+  until: result.json is defined and result.json.fs_status == sn_enabled 
 - set_fact:
     file_systems: "{{ result.json }}"
