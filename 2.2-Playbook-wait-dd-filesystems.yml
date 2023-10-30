@@ -31,14 +31,11 @@
   - debug: 
       msg: "{{ access_token }}"
       verbosity: 1
-  - name: Get Storage tiers {{ ppdd_fqdn }}
+  - name: Wait for active Tier {{ ppdd_fqdn }}
     include_role: 
-      name: get_ppdd_file-systems
+      name: wait_ppdd_file-systems
     vars:
       filter: "tierType=ACTIVE"
-    retries: "100"
-    delay: "30"
-    until: file_systems.fs_status == sn_enabled 
   - debug:
 #      msg: "{{ tiers | json_query('diskInfo[].device') }}"
       msg: "{{ file_systems }}"
