@@ -34,8 +34,6 @@
   - name: Wait for active Tier {{ ppdd_fqdn }}
     include_role: 
       name: wait_ppdd_file-systems
-    vars:
-      filter: "tierType=ACTIVE"
   - debug:
 #      msg: "{{ tiers | json_query('diskInfo[].device') }}"
       msg: "{{ file_systems }}"
