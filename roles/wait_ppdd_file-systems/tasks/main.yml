@@ -8,7 +8,7 @@
   set_fact: 
     uri: "{{ uri }}?filter={{ filter }}" # |urlencode}}" #&include_fields={{ include_fields |urlencode}}}"
   when: filter | default('', true) | trim != ''  
-- name: Get PPDD file-systems
+- name: Wait for DD Filesystem enabled
   uri:
     method: GET
     url: "{{ uri }}"
