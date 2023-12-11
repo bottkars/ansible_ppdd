@@ -10,10 +10,11 @@
     validate_certs: false
   register: result  
   when: not ansible_check_mode 
+  retries: "{{ retries }}"
+  delay: "{{ delay }}"  
+  until: result.x_dd_auth_token is defined 
 - set_fact:
     access_token: "{{ result.x_dd_auth_token }}"
   when: result.x_dd_auth_token is defined 
-- set_fact:
-    access_token: "none"
-  when: result.x_dd_auth_token is undefined 
+
 

@@ -2,3 +2,5 @@ ppdd_api_ver: rest/v1.0
 username: sysadmin
 ppdd_port: 3009
 status_code: 201
+retries: 0
+delay: 0
