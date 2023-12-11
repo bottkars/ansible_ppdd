@@ -12,7 +12,10 @@
         "current_password": "{{ current_password }}",
         "new_password": "{{ new_password }}"
       }    
-  register: result  
+  register: result
+  retries: "{{ retries }}"
+  delay: "{{ delay }}"
+  until: result.status == 200
   when: not ansible_check_mode 
 - debug: 
     msg: "{{ result }}"
