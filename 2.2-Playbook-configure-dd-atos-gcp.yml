@@ -37,7 +37,7 @@
       verbosity: 1
 
 
-  - name: Get Active Tier on Object Status
+  - name: Get Active Tier on Object Status {{ atos_bucket  }}
     include_role: 
       name: get_ppdd_file-systems_object-stores  
 
