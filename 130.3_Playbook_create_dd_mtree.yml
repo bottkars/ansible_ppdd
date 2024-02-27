@@ -1,0 +1,50 @@
+# Example Playbok to configure PPDD
+- name: Playbook to configure DataDomain for PPDM
+  hosts: localhost
+  connection: local
+  vars_files: 
+    - ./vars/main.yml
+  tasks:
+  - name: Checking if PPDD FQDN / IP is set
+    fail: 
+      msg: "We do not have ppdd fqdn set !"
+    when: (ppdd_fqdn is not defined) or (ppdd_fqdn|length <= 8)
+  - name: Checking PPDD_PASSWORD is set
+    fail: 
+      msg: "We do not have ppdd_password  set !"
+    when: (ppdd_password is not defined) or (ppdd_password|length == 0)  
+  - name: Setting Base URL
+    set_fact: 
+      ppdd_baseurl: "{{ ppdd_fqdn }}"  
+  - name: Check DataDomain Appliance Ready {{ ppdd_fqdn }}
+    include_role:
+      name: wait_ppdd_api_ready 
+  - debug: 
+      msg: "{{ result }}"
+      verbosity: 1           
+  - name: Get PPDD Token for {{ ppdd_fqdn }}
+    vars:
+      username: "{{ ppdd_username }}"
+      password: "{{ ppdd_password }}"
+    include_role: 
+      name: get_ppdd_token
+  - debug: 
+      msg: "{{ access_token }}"
+      verbosity: 1
+
+  - name: Create mtree for PPDM nfs Export
+    include_role: 
+      name: new_ppdd_mtree
+    vars:
+      mtree_name: "{{ new_mtree }}" 
+
+  - name: New PPDM nfs Export for {{ ppdd_nfs_host }}
+    include_role: 
+      name: new_ppdd_nfs_export
+    vars:
+      export_name: "{{ ppdd_nfs_path }}"
+      export_path: "{{ ppdd_nfs_path }}"
+      clients:
+          client_name:
+            - "{{ ppdd_nfs_host }}"
+          client_options: sec=sys,rw,no_root_squash,no_all_squash,secure,version=4          
