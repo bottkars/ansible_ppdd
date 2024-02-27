@@ -45,6 +45,5 @@
       export_name: "{{ mtree_name | basename}}"
       export_path: "{{ mtree_name }}"
       clients:
-          client_name:
-            - "{{ ppdd_nfs_hosts | split(',') }}"
+          client_name: "{{ ppdd_nfs_hosts | split(',') }}"
           client_options: sec=sys,rw,no_root_squash,no_all_squash,secure,version=4          
