@@ -42,8 +42,8 @@
     include_role: 
       name: new_ppdd_nfs_export
     vars:
-      export_name: "{{ ppdd_nfs_path }}"
-      export_path: "{{ ppdd_nfs_path }}"
+      export_name: "{{ new_mtree }}"
+      export_path: "{{ new_mtree }}"
       clients:
           client_name:
             - "{{ ppdd_nfs_host }}"
