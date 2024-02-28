@@ -37,4 +37,7 @@
       name: set_ppdd_protocols-nfs
     vars:
       v3Status: true
-      v4Status: true      
+      v4Status: true
+  - debug:
+      msg: "{{ protocol_nfs }}"
+
