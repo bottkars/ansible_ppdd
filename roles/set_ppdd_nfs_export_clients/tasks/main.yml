@@ -1,0 +1,23 @@
+#/api/v2/dd-systems/{SYSTEM-ID}/protocols/nfs/exports/id/clients
+
+- name: Set NFS Export Clients 
+  uri:
+    method: PUT
+    url: "{{ ppdd_baseurl }}:{{ ppdd_port }}/{{ ppdd_api_ver }}/dd-systems/{{ system_id }}/protocols/nfs/exports/{{ export_id  }}/clients"
+    body_format: json
+    body: "{{ modify_clients }}"
+    headers:
+      X-DD-AUTH-TOKEN: "{{ access_token }}"    
+    status_code: 200,201,400
+    validate_certs: false
+  register: result  
+  when: not ansible_check_mode
+
+- set_fact:
+    nfs_export_clients: "{{ result.json }}"
+  when: result.json is defined 
+
+- debug:
+    msg:  "{{ nfs_export_clients }}"
+    verbosity: 0
+  when: nfs_export is defined   

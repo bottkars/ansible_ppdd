@@ -1,0 +1,58 @@
+#/api/v2/dd-systems/{SYSTEM-ID}/protocols/nfs/exports/id/clients
+
+- name: Get PPDM NFS Export Clients for {{ export_id }}
+  include_role: 
+    name: get_ppdd_nfs_export_clients
+  vars:
+    id: "{{ export_id }}"
+- name: We have existing Clients
+  debug:
+    msg: "Existing clients {{ nfs_export_clients }}"
+    verbosity: 1  
+  when: nfs_export_clients is defined 
+- name: existing Clients
+  debug:
+    msg:  "{{ nfs_export_clients.clients | json_query('[*].name') }}"
+    verbosity: 1  
+- name: submitted Clients
+  debug:
+    verbosity: 1  
+    msg: "{{ new_clients.client_name }}"    
+- name: Building NFS Client Diff 
+  set_fact:  
+    new_diff_clients: "{{ new_clients.client_name | difference(nfs_export_clients.clients | json_query('[*].name')) }}"  
+  
+- name: new Clients
+  debug:
+    msg: "{{ new_diff_clients }}"
+    verbosity: 1  
+  when: new_diff_clients| default('', true) | trim != '' 
+- name: Set new NFS Export Clients for {{ export_id }}
+  uri:
+    method: POST
+    url: "{{ ppdd_baseurl }}:{{ ppdd_port }}/{{ ppdd_api_ver }}/dd-systems/{{ system_id }}/protocols/nfs/exports/{{ export_id  }}/clients"
+    body_format: json
+    body:
+      clients: 
+        client_name: "{{ new_diff_clients }}"
+        client_options: "{{ new_clients.client_options }}"
+    headers:
+      X-DD-AUTH-TOKEN: "{{ access_token }}"    
+    status_code: 201,400, 200
+    validate_certs: false
+  register: result  
+  when: not ansible_check_mode and new_diff_clients| default('', true) | trim != ''
+
+- set_fact:
+    new_nfs_export_clients: "{{ result.json }}"
+  when: result.json is defined 
+
+- debug:
+    msg:  "New Clients: {{ new_nfs_export_clients }}"
+    verbosity: 0
+  when: new_nfs_export_clients is defined   
+- name: No new clients defined
+  debug:
+    msg:  "no difference in client list"
+    verbosity: 0
+  when: new_nfs_export_clients is not defined     

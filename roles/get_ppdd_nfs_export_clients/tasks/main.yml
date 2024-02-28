@@ -1,0 +1,21 @@
+- name: Define uri with id
+  set_fact: 
+    uri: "{{ ppdd_baseurl }}:{{ ppdd_port }}/{{ ppdd_api_ver }}/dd-systems/{{ system_id }}/protocols/nfs/exports/{{ id | regex_replace('/','%2F') }}/clients"
+  when: id  | default('', true) | trim != ''
+
+- name: Get PPDD NFS Export CLients for {{ id | regex_replace('/','%2F') }}
+  uri:
+    method: GET
+    url: "{{ uri }}"
+    body_format: json 
+    headers:
+      X-DD-AUTH-TOKEN: "{{ access_token }}"    
+    status_code: 200,400
+    validate_certs: false
+  register: result  
+  when: not ansible_check_mode 
+- set_fact:
+    nfs_export_clients: "{{ result.json }}"
+  when: result.json is defined and result.status != 400
+
+

@@ -1,0 +1,58 @@
+#/api/v2/dd-systems/{SYSTEM-ID}/protocols/nfs
+- name: check nfs export
+  include_role: 
+    name: get_ppdd_nfs_exports
+  vars:
+    id: "{{ export_path }}"
+
+- name: new PPDD NFS export 
+  uri:
+    method: POST
+    url: "{{ ppdd_baseurl }}:{{ ppdd_port }}/{{ ppdd_api_ver }}/dd-systems/{{ system_id }}/protocols/nfs/exports"
+    body_format: json
+    body: |
+     {
+       "export_name": "{{export_name }}",
+       "export_path": "/data/col1/{{export_path | basename}}",
+       "clients": {{ clients }}
+     }
+    headers:
+      X-DD-AUTH-TOKEN: "{{ access_token }}"    
+    status_code: 201,400
+    validate_certs: false
+  register: result  
+  when: not ansible_check_mode and nfs_exports is not defined
+- set_fact:
+    nfs_export: "{{ result.json }}"
+  when: result.json is defined 
+
+#- name: Update PPDD NFS export 
+#  uri:
+#    method: POST
+#    url: "{{ ppdd_baseurl }}:{{ ppdd_port }}/{{ ppdd_api_ver }}/dd-systems/{{ system_id }}/protocols/nfs/exports/{{ nfs_exports.export_id  }}"
+#    body_format: json
+#    body: |
+#     {
+#       "export_name": "{{export_name }}",
+#       "export_path": "{{export_path }}",
+#       "clients": {{ clients }}
+#     }
+#    headers:
+#      X-DD-AUTH-TOKEN: "{{ access_token }}"    
+#    status_code: 201,400
+#    validate_certs: false
+#  register: result  
+#  when: not ansible_check_mode and nfs_exports is not defined
+
+- name: Update NFS Clients
+  include_role:
+    name: new_ppdd_nfs_export_clients
+  vars:
+    new_clients: "{{ clients }}"
+    export_id: "{{ nfs_exports.export_id  }}"  
+  when: nfs_exports.export_id is defined  
+
+- debug:
+    msg:  "{{ nfs_export }}"
+    verbosity: 1
+  when: nfs_export is defined    

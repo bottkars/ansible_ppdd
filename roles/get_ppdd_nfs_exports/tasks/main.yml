@@ -1,13 +1,30 @@
-- name: Get PPDS Sytem Configuration
+- name: Define uri with id
+  set_fact: 
+    uri: "{{ ppdd_baseurl }}:{{ ppdd_port }}/{{ ppdd_api_ver }}/dd-systems/{{ system_id }}/protocols/nfs/exports/{{ id | regex_replace('/','%2F') }}"
+  when: id  | default('', true) | trim != ''
+- name: Define uri without id
+  set_fact: 
+    uri: "{{ ppdd_baseurl }}:{{ ppdd_port }}/{{ ppdd_api_ver }}/dd-systems/{{ system_id }}/protocols/nfs/exports"
+  when: id  | default('', false) | trim == ''
+- name: Define uri with filter
+  set_fact: 
+    uri: "{{ uri }}?filter={{ filter | urlencode }}" # #&include_fields={{ include_fields |urlencode}}}"
+  when: filter | default('', true) | trim != ''  
+
+
+- name: Get PPDD NFS Exports
   uri:
     method: GET
-    url: "{{ ppdd_baseurl }}:{{ ppdd_port }}/{{ ppdd_api_ver }}/dd-systems/{{ system_id }}/protocols/nfs/exports"
+    url: "{{ uri }}"
     body_format: json 
     headers:
       X-DD-AUTH-TOKEN: "{{ access_token }}"    
-    status_code: 200
+    status_code: 200,400
     validate_certs: false
   register: result  
   when: not ansible_check_mode 
 - set_fact:
     nfs_exports: "{{ result.json }}"
+  when: result.json is defined and result.status != 400
+
+

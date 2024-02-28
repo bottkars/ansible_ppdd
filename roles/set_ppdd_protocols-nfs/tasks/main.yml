@@ -1,0 +1,17 @@
+#/api/v2/dd-systems/{SYSTEM-ID}/protocols/nfs
+- name: Set PPDD NFS Protocol
+  uri:
+    method: PUT
+    url: "{{ ppdd_baseurl }}:{{ ppdd_port }}/{{ ppdd_api_ver }}/dd-systems/{{ system_id }}/protocols/nfs"
+    body_format: json
+    body:
+      v3Status: "{{ v3Status }}"
+      v4Status: "{{ v4Status }}"      
+    headers:
+      X-DD-AUTH-TOKEN: "{{ access_token }}"    
+    status_code: 200
+    validate_certs: false
+  register: result  
+  when: not ansible_check_mode 
+- set_fact:
+    protocol_nfs: "{{ result.json }}"
