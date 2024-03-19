@@ -1,6 +1,7 @@
 # Example Playbok to configure PPDD
 - name: Playbook to configure DataDomain for PPDM
   hosts: localhost
+  gather_facts: no
   connection: local
   gather_facts: false
   vars_files: 
@@ -35,8 +36,6 @@
   - name: Get NFS Exports {{ ppdd_fqdn }}
     include_role: 
       name: get_ppdd_nfs_exports
-    vars:  
-      id: "/data/col1/vault_updates"
   - debug:
       msg: "{{ nfs_exports }}"
       verbosity: 0 

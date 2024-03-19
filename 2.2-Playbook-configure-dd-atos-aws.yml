@@ -1,6 +1,7 @@
 # Example Playbok to configure PPDD
 - name: Configure PowerProtect DataDomain ATOS ( Active Tier on Object) for AWS
   hosts: localhost
+  gather_facts: no
   connection: local
   vars_files: 
     - ./vars/main.yml
