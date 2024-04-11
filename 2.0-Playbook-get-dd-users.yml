@@ -1,5 +1,5 @@
 # Example Playbok to configure PPDD
-- name: Check PowerProtect DataDomain ATOS ( Active Tier on Object) for Azure
+- name: Playbook to configure DataDomain for PPDM
   hosts: localhost
   gather_facts: no
   connection: local
@@ -13,15 +13,7 @@
   - name: Checking PPDD_PASSWORD is set
     fail: 
       msg: "We do not have ppdd_password  set !"
-    when: (ppdd_password is not defined) or (ppdd_password|length == 0)
-  - name: Checking if atos_container is set
-    fail: 
-      msg: "We do not have atos_container set !"
-    when: (atos_bucket is not defined) or (atos_container|length <= 5)    
-  - name: Checking if atos_storageaccount is set
-    fail: 
-      msg: "We do not have atos_storageaccount set !"
-    when: (atos_bucket is not defined) or (atos_storageaccount|length <= 8)        
+    when: (ppdd_password is not defined) or (ppdd_password|length == 0)     
   - name: Setting Base URL
     set_fact: 
       ppdd_baseurl: "{{ ppdd_fqdn }}"  
@@ -40,18 +32,13 @@
   - debug: 
       msg: "{{ access_token }}"
       verbosity: 1
-  - name: Wait for active Tier {{ ppdd_fqdn }} with {{ atos_container }} on {{ atos_storageaccount}}
+  - name: Get Storage tiers {{ ppdd_fqdn }}
     include_role: 
-      name: wait_ppdd_file-systems
+      name: get_ppdd_users
+    #vars:
+    #  filter: "status=UNKNOWN and tierType=OTHER and capacity=(536870912000,1073741824000)"
   - debug:
 #      msg: "{{ tiers | json_query('diskInfo[].device') }}"
-      msg: "{{ file_systems }}"
-      verbosity: 0       
-  - name: Get Active Tier on Object Status
-    include_role: 
-      name: get_ppdd_file-systems_object-stores  
-  - name: Enable DDBoost
-    include_role: 
-      name: set_ppdd_boostService
-    vars:
-      operation: "enable" 
+      msg: "{{ users }}"
+      verbosity: 0 
+      
