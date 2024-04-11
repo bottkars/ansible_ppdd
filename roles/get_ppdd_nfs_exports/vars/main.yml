@@ -1,3 +1,4 @@
 ppdd_api_ver: rest/v2.0
 ppdd_port: 3009
 system_id: "0"
+include_fields: "^([^,]+,*)+$"

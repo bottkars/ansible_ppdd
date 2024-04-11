@@ -36,7 +36,7 @@
     include_role: 
       name: get_ppdd_mtrees
     vars:
-      filter: "{{ my_filter }}"  
+      filter: "{{ my_filter | default('') }}"  
   - debug:
 #      msg: "{{ tiers | json_query('diskInfo[].device') }}"
       msg: "{{ mtrees.mtree }}"

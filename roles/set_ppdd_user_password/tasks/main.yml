@@ -4,7 +4,8 @@
     url: "{{ ppdd_baseurl }}:{{ ppdd_port }}/{{ ppdd_api_ver }}/dd-systems/{{ system_id }}/users/{{ user }}"
     body_format: json 
     headers:
-      X-DD-AUTH-TOKEN: "{{ access_token }}"    
+      X-DD-AUTH-TOKEN: "{{ access_token }}" 
+      accept: application/text         
     status_code: "{{ status_code }}"
     validate_certs: false
     body: |

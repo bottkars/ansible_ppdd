@@ -9,7 +9,7 @@
   when: id  | default('', false) | trim == ''
 - name: Define uri with filter
   set_fact: 
-    uri: "{{ uri }}?filter={{ filter |urlencode}}&include_fields={{ include_fields |urlencode}}}"
+    uri: "{{ uri }}?filter={{ filter |urlencode}}&include_fields={{ include_fields |urlencode}}"
   when: filter | default('', true) | trim != ''  
 # - name: Define uri without filter
 #  set_fact: 

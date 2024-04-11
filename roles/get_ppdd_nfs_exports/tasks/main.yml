@@ -8,7 +8,7 @@
   when: id  | default('', false) | trim == ''
 - name: Define uri with filter
   set_fact: 
-    uri: "{{ uri }}?filter={{ filter | urlencode }}" # #&include_fields={{ include_fields |urlencode}}}"
+    uri: "{{ uri }}?filter={{ filter | urlencode }}&include_fields={{ include_fields |urlencode}}"
   when: filter | default('', true) | trim != ''  
 
 
@@ -20,6 +20,7 @@
     headers:
       X-DD-AUTH-TOKEN: "{{ access_token }}"    
     status_code: 200,400
+    timeout: 600
     validate_certs: false
   register: result  
   when: not ansible_check_mode 

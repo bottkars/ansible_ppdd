@@ -40,6 +40,13 @@
   - debug: 
       msg: "{{ access_token }}"
       verbosity: 1
+  - name: Wait for active Tier {{ ppdd_fqdn }} with {{ atos_bucket }}
+    include_role: 
+      name: wait_ppdd_file-systems
+  - debug:
+#      msg: "{{ tiers | json_query('diskInfo[].device') }}"
+      msg: "{{ file_systems }}"
+      verbosity: 0       
   - name: Get Active Tier on Object Status
     include_role: 
       name: get_ppdd_file-systems_object-stores  
